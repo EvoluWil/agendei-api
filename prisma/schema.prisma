@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String        @id @default(uuid())
+  email    String        @unique
+  name     String
+  password String?
+  role     enumUserRoles @default(COMMON)
+  picture  String?
+  token    String?
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(3)
+
+  createdReservations Reservation[] @relation(name: "createdReservations")
+  createdEvents       Event[]       @relation(name: "createdEvents")
+  eventsUsers         EventUser[]
+  reservations        Reservation[]
+
+  @@map("users")
+}
+
+model Event {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  name        String    @unique
+  startDate   DateTime  @db.Timestamptz(3)
+  endDate     DateTime  @db.Timestamptz(3)
+  description String?
+  address     String?
+  state       String?
+  district    String?
+  city        String?
+  value       Int?
+  limit       Int?
+  picture     String?
+  createdAt   DateTime? @default(now()) @db.Timestamptz(3)
+
+  createdBy User @relation(fields: [createdById], references: [id], name: "createdEvents")
+
+  eventsUsers  EventUser[]
+  reservations Reservation[]
+
+  createdById String
+
+  @@map("events")
+}
+
+model EventUser {
+  id String @id @default(uuid())
+
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
+
+  userId  String
+  eventId String
+
+  @@map("eventsUsers")
+}
+
+model Reservation {
+  id        String                @id @default(uuid())
+  createdAt DateTime?             @default(now()) @db.Timestamptz(3)
+  status    enumReservationStatus
+
+  user      User  @relation(fields: [userId], references: [id])
+  createdBy User  @relation(fields: [createdById], references: [id], name: "createdReservations")
+  event     Event @relation(fields: [eventId], references: [id])
+
+  createdById String
+  userId      String
+  eventId     String
+
+  @@map("reservations")
+}
+
+enum enumReservationStatus {
+  APPROVED
+  REGECTED
+  PENDING
+}
+
+enum enumUserRoles {
+  COMMON
+  ADMIN
+}
