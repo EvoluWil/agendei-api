@@ -1,10 +1,40 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProvidersModule } from './providers/providers.module';
+import { UsersModule } from './modules/users/users.module';
+import { EnsureAuthenticated } from './providers/middlewares/ensure.authenticated.middleware';
+import { UserIsInEvent } from './providers/middlewares/user-is-in-event.middleware';
 
 @Module({
-  imports: [],
+  imports: [ProvidersModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  ensureAuthenticatedExclude = [
+    { path: '/', method: RequestMethod.GET },
+    { path: '/v1/auth/sign-in', method: RequestMethod.POST },
+    { path: '/v1/residences', method: RequestMethod.GET },
+    { path: '/v1/email', method: RequestMethod.POST },
+    { path: '/v1/residences/:residenceId', method: RequestMethod.GET },
+    { path: '/v1/users', method: RequestMethod.ALL },
+  ];
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(EnsureAuthenticated)
+      .exclude(...this.ensureAuthenticatedExclude)
+      .forRoutes({
+        path: '*',
+        method: RequestMethod.ALL,
+      });
+
+    consumer
+      .apply(UserIsInEvent)
+      .forRoutes(
+        { path: '/v1/users', method: RequestMethod.POST },
+        { path: '/v1/users/:id', method: RequestMethod.PUT },
+      );
+  }
+}
