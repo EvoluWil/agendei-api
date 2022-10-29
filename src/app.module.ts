@@ -5,9 +5,10 @@ import { ProvidersModule } from './providers/providers.module';
 import { UsersModule } from './modules/users/users.module';
 import { EnsureAuthenticated } from './providers/middlewares/ensure.authenticated.middleware';
 import { UserIsInEvent } from './providers/middlewares/user-is-in-event.middleware';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
-  imports: [ProvidersModule, UsersModule],
+  imports: [ProvidersModule, UsersModule, EventsModule],
   controllers: [AppController],
   providers: [AppService],
 })
