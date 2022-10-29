@@ -18,10 +18,9 @@ model User {
   createdAt DateTime      @default(now()) @db.Timestamptz(3)
   updatedAt DateTime?     @updatedAt @db.Timestamptz(3)
 
-  createdReservations Reservation[] @relation(name: "createdReservations")
-  ownerEvents         Event[]       @relation(name: "ownerEvents")
-  eventsUsers         EventUser[]
-  reservations        Reservation[]
+  ownerEvents  Event[]       @relation(name: "ownerEvents")
+  eventsUsers  EventUser[]
+  reservations Reservation[]
 
   @@map("users")
 }
@@ -69,18 +68,16 @@ model EventUser {
 
 model Reservation {
   id     String                @id @default(uuid())
-  status enumReservationStatus
+  status enumReservationStatus @default(PENDING)
 
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime? @updatedAt @db.Timestamptz(3)
 
-  user      User  @relation(fields: [userId], references: [id])
-  createdBy User  @relation(fields: [createdById], references: [id], name: "createdReservations")
-  event     Event @relation(fields: [eventId], references: [id])
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
 
-  createdById String
-  userId      String
-  eventId     String
+  userId  String
+  eventId String
 
   @@map("reservations")
 }
@@ -89,6 +86,7 @@ enum enumReservationStatus {
   APPROVED
   REGECTED
   PENDING
+  CANCELED
 }
 
 enum enumUserRoles {

@@ -6,9 +6,10 @@ import { UsersModule } from './modules/users/users.module';
 import { EnsureAuthenticated } from './providers/middlewares/ensure.authenticated.middleware';
 import { UserIsInEvent } from './providers/middlewares/user-is-in-event.middleware';
 import { EventsModule } from './modules/events/events.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
 
 @Module({
-  imports: [ProvidersModule, UsersModule, EventsModule],
+  imports: [ProvidersModule, UsersModule, EventsModule, ReservationsModule],
   controllers: [AppController],
   providers: [AppService],
 })
