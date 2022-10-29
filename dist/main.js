@@ -39,7 +39,7 @@ async function bootstrap() {
     app.enableVersioning({
         type: common_1.VersioningType.URI,
     });
-    await app.listen(3000);
+    await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
