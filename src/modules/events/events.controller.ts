@@ -12,11 +12,21 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
 import { UserAuth } from 'src/utils/decorators/dto/user.auth.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
-@Controller('events')
+@ApiBearerAuth()
+@ApiTags('Events')
+@Controller({ path: 'events', version: '1' })
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  @ApiBadRequestResponse({ description: 'já existe um evento com esse nome' })
   @Post()
   create(
     @Body() createEventDto: CreateEventDto,
@@ -35,11 +45,19 @@ export class EventsController {
     return this.eventsService.findOne(id);
   }
 
+  @ApiForbiddenResponse({
+    description: 'Usuário sem autorização para realizar esta ação',
+  })
+  @ApiNotFoundResponse({ description: 'Evento não encontrado' })
   @Put(':id')
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     return this.eventsService.update(id, updateEventDto);
   }
 
+  @ApiForbiddenResponse({
+    description: 'Usuário sem autorização para realizar esta ação',
+  })
+  @ApiNotFoundResponse({ description: 'Evento não encontrado' })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.eventsService.remove(id);

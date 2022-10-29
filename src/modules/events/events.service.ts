@@ -19,8 +19,8 @@ export class EventsService {
 
   async create(createEventDto: CreateEventDto, authUser: UserAuth) {
     const { name } = createEventDto;
-    const alreadyExists = await this.prisma.event.findUnique({
-      where: { name },
+    const alreadyExists = await this.prisma.event.findFirst({
+      where: { name: { equals: name, mode: 'insensitive' } },
       select: { id: true },
     });
 
@@ -28,7 +28,7 @@ export class EventsService {
       throw new BadRequestException('já existe um evento com esse nome');
     }
 
-    await this.prisma.event.create({
+    const event = await this.prisma.event.create({
       data: {
         ...createEventDto,
         name,
@@ -37,7 +37,7 @@ export class EventsService {
       },
     });
 
-    return { ok: true };
+    return { id: event.id };
   }
 
   async findAll() {
@@ -47,7 +47,7 @@ export class EventsService {
 
   async findOne(id: string) {
     const query = await this.qb.query('event');
-    return await this.prisma.event.findFirst({
+    return this.prisma.event.findFirst({
       ...query,
       where: { id },
     });
@@ -62,9 +62,22 @@ export class EventsService {
       throw new NotFoundException('Evento não encontrado');
     }
 
+    if (updateEventDto.name) {
+      const alreadyExists = await this.prisma.event.findFirst({
+        where: { name: { equals: updateEventDto.name, mode: 'insensitive' } },
+        select: { id: true },
+      });
+
+      if (alreadyExists) {
+        throw new BadRequestException('já existe um evento com esse nome');
+      }
+    }
+
     await this.prisma.event.update({
       where: { id },
-      data: updateEventDto,
+      data: updateEventDto.name
+        ? { ...updateEventDto, slug: normalizeString(updateEventDto.name) }
+        : updateEventDto,
     });
 
     return { ok: true };
@@ -79,7 +92,7 @@ export class EventsService {
       throw new NotFoundException('Evento não encontrado');
     }
 
-    await this.prisma.event.delete({ where: { id } });
+    await this.prisma.event.update({ where: { id }, data: { active: false } });
 
     return { ok: true };
   }

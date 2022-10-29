@@ -27,12 +27,12 @@ export class AuthService {
   async signIn(email: string, password: string) {
     const user = await this.prisma.user.findFirst({ where: { email } });
     if (!user) {
-      throw new BadRequestException('Email ou senha invalido');
+      throw new BadRequestException('Email e senha não combinam');
     }
 
     const passwordMatched = await bcrypt.compare(password, user.password);
     if (!passwordMatched) {
-      throw new BadRequestException('Email ou senha invalido');
+      throw new BadRequestException('Email e senha não combinam');
     }
 
     const token = this.generateToken(user.id, user.email, user.role);
@@ -46,15 +46,15 @@ export class AuthService {
         id,
       },
     });
-
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
     const passwordMatched = await bcrypt.compare(oldPassword, user.password);
 
-    if (!passwordMatched)
+    if (!passwordMatched) {
       throw new BadRequestException('Senha antiga invalida');
+    }
 
     const password = await bcrypt.hash(updatePasswordDto.password, 10);
 
@@ -79,7 +79,7 @@ export class AuthService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    const password = await bcrypt.hash(user.id, 10);
+    const password = await bcrypt.hash(user.email, 10);
 
     await this.prisma.user.update({
       where: {
@@ -88,6 +88,6 @@ export class AuthService {
       data: { password },
     });
 
-    return { password: user.id };
+    return { password: user.email };
   }
 }

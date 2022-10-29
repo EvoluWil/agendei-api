@@ -19,7 +19,6 @@ model User {
   updatedAt DateTime?     @updatedAt @db.Timestamptz(3)
 
   ownerEvents  Event[]       @relation(name: "ownerEvents")
-  eventsUsers  EventUser[]
   reservations Reservation[]
 
   @@map("users")
@@ -46,24 +45,11 @@ model Event {
 
   owner User @relation(fields: [ownerId], references: [id], name: "ownerEvents")
 
-  eventsUsers  EventUser[]
   reservations Reservation[]
 
   ownerId String
 
   @@map("events")
-}
-
-model EventUser {
-  id String @id @default(uuid())
-
-  user  User  @relation(fields: [userId], references: [id])
-  event Event @relation(fields: [eventId], references: [id])
-
-  userId  String
-  eventId String
-
-  @@map("eventsUsers")
 }
 
 model Reservation {
@@ -84,7 +70,7 @@ model Reservation {
 
 enum enumReservationStatus {
   APPROVED
-  REGECTED
+  REJECTED
   PENDING
   CANCELED
 }
