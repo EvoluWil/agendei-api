@@ -1,11 +1,14 @@
-import { Body, Controller, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Param, Get, Post, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { UserAuth } from 'src/utils/decorators/dto/user.auth.dto';
+import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -18,8 +21,15 @@ export class AuthController {
 
   @ApiBadRequestResponse({ description: 'Email e senha não combinam' })
   @Post('/sign-in')
-  async signIn(@Body() signInDto: SignInDto) {
+  signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @ApiUnauthorizedResponse({ description: 'Acesso não autorizado' })
+  @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
+  @Get('/get-me')
+  getMe(@AuthUser() authUser: UserAuth) {
+    return this.authService.getMe(authUser);
   }
 
   @ApiBadRequestResponse({ description: 'Senha antiga invalida' })
@@ -29,7 +39,7 @@ export class AuthController {
     description: 'Usuário sem autorização para realizar esta ação',
   })
   @Put('/update-password/:id')
-  async updatePassword(
+  updatePassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
@@ -41,7 +51,7 @@ export class AuthController {
   })
   @ApiNotFoundResponse({ description: 'Usuário não encontrado' })
   @Put('/reset-password/:id')
-  async resetPassword(@Param('id') id: string) {
+  resetPassword(@Param('id') id: string) {
     return this.authService.resetPassword(id);
   }
 }

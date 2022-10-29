@@ -8,6 +8,7 @@ import { enumUserRoles } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { FindUserDto } from 'src/modules/users/dto/find-user.dto';
 import { PrismaService } from 'src/providers/prisma/prisma.service';
+import { UserAuth } from 'src/utils/decorators/dto/user.auth.dto';
 import { defaultPlainToClass } from 'src/utils/functions/default-plain-class.function';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 
@@ -37,6 +38,17 @@ export class AuthService {
 
     const token = this.generateToken(user.id, user.email, user.role);
     return { user: defaultPlainToClass(FindUserDto, user), token };
+  }
+
+  async getMe(authUser: UserAuth) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: authUser.id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    return user?.password ? { ...user, password: null } : user;
   }
 
   async updatePassword(id: string, updatePasswordDto: UpdatePasswordDto) {
