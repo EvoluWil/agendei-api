@@ -64,7 +64,10 @@ export class EventsService {
 
     if (updateEventDto.name) {
       const alreadyExists = await this.prisma.event.findFirst({
-        where: { name: { equals: updateEventDto.name, mode: 'insensitive' } },
+        where: {
+          name: { equals: updateEventDto.name, mode: 'insensitive' },
+          NOT: { id },
+        },
         select: { id: true },
       });
 
