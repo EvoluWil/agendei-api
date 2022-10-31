@@ -43,6 +43,14 @@ export class ReservationsController {
   @ApiForbiddenResponse({
     description: 'Usuário sem autorização para realizar esta ação',
   })
+  @Get('/requests/:eventId')
+  findReservationsRequests(@Param(':eventId') eventId: string) {
+    return this.reservationsService.findReservationsRequests(eventId);
+  }
+
+  @ApiForbiddenResponse({
+    description: 'Usuário sem autorização para realizar esta ação',
+  })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.reservationsService.findOne(id);
