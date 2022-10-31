@@ -84,6 +84,13 @@ export class ReservationsService {
     return this.prisma.reservation.findMany(query);
   }
 
+  async findReservationsRequests(eventId: string) {
+    return this.prisma.reservation.findMany({
+      where: { id: eventId, status: 'PENDING' },
+      include: { user: { select: { picture: true, email: true, name: true } } },
+    });
+  }
+
   async findOne(id: string) {
     const query = await this.qb.query('reservation');
     return await this.prisma.reservation.findFirst({

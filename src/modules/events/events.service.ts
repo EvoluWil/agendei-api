@@ -37,7 +37,7 @@ export class EventsService {
       },
     });
 
-    return { id: event.id };
+    return { slug: event.slug };
   }
 
   async findAll() {

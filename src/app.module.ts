@@ -48,11 +48,13 @@ export class AppModule {
         { path: '/v1/auth/update-password/:id', method: RequestMethod.PUT },
       );
 
-    consumer
-      .apply(IsEventOwner)
-      .forRoutes(
-        { path: '/v1/events/:id', method: RequestMethod.DELETE },
-        { path: '/v1/events/:id', method: RequestMethod.PUT },
-      );
+    consumer.apply(IsEventOwner).forRoutes(
+      { path: '/v1/events/:id', method: RequestMethod.DELETE },
+      { path: '/v1/events/:id', method: RequestMethod.PUT },
+      {
+        path: '/v1/reservations/requests/:eventId',
+        method: RequestMethod.PUT,
+      },
+    );
   }
 }
