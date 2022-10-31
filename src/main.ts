@@ -14,7 +14,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,7 +28,6 @@ async function bootstrap() {
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    origin: ['http://localhost:3000', 'https://agendei-web.vercel.app/'],
     allowedHeaders: [
       'X-Requested-With',
       'X-HTTP-Method-Override',
