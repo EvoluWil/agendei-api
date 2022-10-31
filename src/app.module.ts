@@ -33,7 +33,6 @@ export class AppModule {
     consumer
       .apply(IsAdmin)
       .forRoutes(
-        { path: '/v1/users', method: RequestMethod.GET },
         { path: '/v1/reservations', method: RequestMethod.GET },
         { path: '/v1/auth/reset-password/:id', method: RequestMethod.PUT },
       );
