@@ -14,7 +14,7 @@ import { IsRequestedUser } from './providers/middlewares/is-requested-user.middl
 })
 export class AppModule {
   ensureAuthenticatedExclude = [
-    { path: '/', method: RequestMethod.GET },
+    { path: '/docs', method: RequestMethod.GET },
     { path: '/v1/auth/sign-in', method: RequestMethod.POST },
     { path: '/v1/users', method: RequestMethod.POST },
     { path: '/v1/events', method: RequestMethod.GET },
