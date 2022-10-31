@@ -93,18 +93,10 @@ export class UsersService {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    await this.prisma.user.update({
+    await this.prisma.user.delete({
       where: { id },
-      data: {
-        reservations: {
-          set: [],
-        },
-        ownerEvents: {
-          set: [],
-        },
-      },
+      include: { ownerEvents: true, reservations: true },
     });
-    await this.prisma.user.delete({ where: { id } });
 
     return { ok: true };
   }
