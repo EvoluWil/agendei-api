@@ -40,9 +40,9 @@ export class EventsController {
     return this.eventsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.eventsService.findOne(id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.eventsService.findOne(slug);
   }
 
   @ApiForbiddenResponse({

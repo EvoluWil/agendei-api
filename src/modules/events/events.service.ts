@@ -45,11 +45,11 @@ export class EventsService {
     return this.prisma.event.findMany(query);
   }
 
-  async findOne(id: string) {
+  async findOne(slug: string) {
     const query = await this.qb.query('event');
     return this.prisma.event.findFirst({
       ...query,
-      where: { id },
+      where: { slug },
     });
   }
 
