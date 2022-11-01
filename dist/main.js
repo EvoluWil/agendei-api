@@ -13,7 +13,7 @@ async function bootstrap() {
         .addBearerAuth()
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('', app, document);
+    swagger_1.SwaggerModule.setup('docs', app, document, { useGlobalPrefix: true });
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -23,7 +23,6 @@ async function bootstrap() {
         credentials: true,
         preflightContinue: false,
         optionsSuccessStatus: 204,
-        origin: ['http://localhost:3000'],
         allowedHeaders: [
             'X-Requested-With',
             'X-HTTP-Method-Override',

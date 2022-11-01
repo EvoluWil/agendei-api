@@ -22,7 +22,10 @@ export class ReservationsService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, reservations: { select: { eventId: true } } },
+      select: {
+        id: true,
+        reservations: { select: { eventId: true, status: true } },
+      },
     });
 
     if (!user) {
@@ -43,7 +46,12 @@ export class ReservationsService {
     }
 
     if (
-      user.reservations?.some((reservation) => reservation.eventId === eventId)
+      user.reservations?.some(
+        (reservation) =>
+          reservation.eventId === eventId &&
+          (reservation.status === 'PENDING' ||
+            reservation.status === 'APPROVED'),
+      )
     ) {
       throw new BadRequestException(
         'Você já possui uma solicitação de reserva para este evento',
@@ -57,11 +65,12 @@ export class ReservationsService {
     }
 
     if (
+      event.limit &&
       event.limit <=
-      event.reservations?.reduce(
-        (acc, cur) => (acc + cur.status === 'APPROVED' ? 1 : 0),
-        0,
-      )
+        event.reservations?.reduce(
+          (acc, cur) => (acc + cur.status === 'APPROVED' ? 1 : 0),
+          0,
+        )
     ) {
       throw new BadRequestException('Evento lotado');
     }
@@ -131,11 +140,12 @@ export class ReservationsService {
     }
 
     if (
+      reservation?.event?.limit &&
       reservation.event.limit <=
-      reservation.event.reservations?.reduce(
-        (acc, cur) => (acc + cur.status === 'APPROVED' ? 1 : 0),
-        0,
-      )
+        reservation.event.reservations?.reduce(
+          (acc, cur) => (acc + cur.status === 'APPROVED' ? 1 : 0),
+          0,
+        )
     ) {
       throw new BadRequestException('Evento lotado');
     }
