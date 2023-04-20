@@ -28,6 +28,10 @@ async function bootstrap() {
     credentials: true,
     preflightContinue: false,
     optionsSuccessStatus: 204,
+    origin: [
+      'https://agendei-web.vercel.app/',
+      '127.0.0.1:3000',
+    ],
     allowedHeaders: [
       'X-Requested-With',
       'X-HTTP-Method-Override',
